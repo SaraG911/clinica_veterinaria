@@ -1,34 +1,57 @@
-update cliente
- set nome = 'Jose'
- where id_cliente = 2;
- 
+BEGIN TRANSACTION;
 
 
-select * from cliente;
+---------tabela cliente----
+Create table cliente(
+    id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT(100),
+    telefone TEXT(15)
+);
 
-----ordenar
+------tabela pet-----
 
-select * from pet
-Order BY nome;
+Create table pet(
+    id_pet INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT,
+    especie TEXT,
+    idade INTEGER,
+    id_cliente INTEGER,
+    FOREIGN KEY(id_cliente) REFERENCES cliente(id_cliente)
+);
 
+------tabela veterinario-----
+Create table veterinario(
+    id_veterinario INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    crmv TEXT NOT NULL
+);
 
-select * from consulta
-Order by data ASC;
+-------tabela consullta-------
+Create table consulta(
+    id_consulta INTEGER PRIMARY KEY AUTOINCREMENT,
+    data TEXT NOT NULL,
+    tipo_de_servico TEXT,
+    id_pet INTEGER,
+    id_veterinario INTEGER,
+    FOREIGN KEY(id_pet) REFERENCES pet(id_pet),
+    FOREIGN KEY(id_veterinario) REFERENCES veterinario(id_veterinario)
+);
 
-----quantas consultas cada veterinario fez
+--------tabela medicamento-----
+Create table medicamento(
+    id_medicamento INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    quantidade INTEGER,
+    data_de_validade TEXT,
+    id_consulta INTEGER,
+    FOREIGN KEY(id_consulta) REFERENCES consulta(id_consulta)
+);
 
-Select
-    v.name AS veterinario,
-    COUNT(c.id_consulta) AS Total_consultas
-FROM consulta c
-JOIN veterinario v ON v.id_veterinario = c.id_veterinario
-Order BY v.name;
-
-Select
-    v.name AS veterinario,
-    COUNT(c.id_consulta) AS Total_consultas
-FROM consulta c
-JOIN veterinario v ON v.id_veterinario = c.id_veterinario
-GROUP BY v.name
-HAVING COUNT(c.id_consulta) < 3
-ORDER BY v.name;
+-------tabela medicamento_consulta------
+Create table medicamento_consulta(
+    id_medicamento INTEGER,
+    id_consulta INTEGER,
+    dose_aplicada TEXT,    
+    FOREIGN KEY(id_medicamento) REFERENCES medicamento(id_medicamento),
+    FOREIGN KEY(id_consulta) REFERENCES consulta(id_consulta)
+);
